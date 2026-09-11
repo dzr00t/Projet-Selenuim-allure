@@ -12,12 +12,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
+import java.net.MalformedURLException;
+import java.net.URL;
 import com.example.PF.*;
 import com.example.POM.CartPOM;
 import com.example.POM.CheckoutPOM;
 import com.example.POM.LoginPOM;
 import com.example.POM.ProductPOM;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import net.datafaker.Faker;
 
@@ -32,11 +35,19 @@ public class E2EwebshopTest {
     CartPOM CP;
     CheckoutPOM ChP;
 
-    String URL = "https://demowebshop.tricentis.com/";
+    String URL2 = "https://demowebshop.tricentis.com/";
 
     @BeforeEach
     public void setUp() {
-        driver = new ChromeDriver();
+
+        URL gridUrl = null;
+            try {
+                    gridUrl = new URL("http://selenium-hub:4444/wd/hub");
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+        ChromeOptions co = new ChromeOptions();
+        driver = new RemoteWebDriver(gridUrl, co);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         wait = new WebDriverWait(driver, Duration.ofSeconds(15));
         
@@ -49,7 +60,7 @@ public class E2EwebshopTest {
         CP = new CartPOM(driver);
         ChP = new CheckoutPOM(driver);
 
-        driver.get(URL);
+        driver.get(URL2);
 
     }
 
@@ -92,7 +103,7 @@ public class E2EwebshopTest {
         assertTrue(driver.getCurrentUrl().contains("/registerresult/"));
         // logout
         RR.ClickLogout();
-        assertTrue(driver.getCurrentUrl().equalsIgnoreCase(URL));
+        assertTrue(driver.getCurrentUrl().equalsIgnoreCase(URL2));
         // login
         Hpf.ClickLogin();
         assertTrue(driver.getCurrentUrl().contains("/login"));
